@@ -16,57 +16,44 @@
 # limitations under the License.
 #
 
-require 'mixlib/shellout'
+require 'script_executor'
 
 class Mesh
 
   def initialize
-    @current_dir = File.dirname(__FILE__)    
+    @script_executor = ScriptExecutor.new
   end
 
   # Create -- creates a new object instance of a type 
   def Create(type_name, arguments = nil)
-    run_command("cat " + get_script_path('mesh-create.ps1'))
+    run_command('mesh-create.ps1')
   end
     
   # List -- lists methods on a type or object
   def List(type_name, object_id = nil)
-    run_command("cat " + get_script_path('mesh-list.ps1'))    
+    run_command('mesh-list.ps1')    
   end
   
   # Execute -- calls a class method
   def Execute(type_name, object_id, method, arguments)
-    run_command("cat " + get_script_path('mesh-execute.ps1'))        
+    run_command('mesh-execute.ps1')        
   end
   
   # Get -- gets existing object
   def Get(object_id)
-    run_command("cat " + get_script_path('mesh-get.ps1'))            
+    run_command('mesh-get.ps1')            
   end
   
   # Delete?
   def Delete(object_id)
-    run_command("cat " + get_script_path('mesh-delete.ps1'))
+    run_command('mesh-delete.ps1')
   end
 
   private
 
-  def run_command(command_line)
-    command = Mixlib::ShellOut.new(command_line)
-    result = command.run_command
-    return_value = result.stdout
-    exitstatus = result.exitstatus
-
-    if exitstatus != 0
-      raise "Command failed with error status #{exitstatus}"
-    end
-    
+  def run_command(script_name)
+    @script_executor.run_command(script_name)
   end
-
-  def get_script_path(script_name)
-    File::join(@current_dir,script_name)
-  end
-  
   
 end
 
