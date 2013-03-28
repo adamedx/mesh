@@ -88,7 +88,9 @@ describe 'Mesh core .NET interop functionality' do
 
       it "Executes a method on a class" do
         Mesh.with_clr do | mesh |
-          mesh.execute("fun", "objectid", "method", nil)
+          result = mesh.execute("System.Security.Principal.WindowsIdentity", "objectid", "GetCurrent", nil)
+          result.length.should > 20
+          result.include?('ImpersonationLevel').should == true          
         end
       end
 

@@ -40,9 +40,10 @@ class Mesh
     run_command(".\\mesh-list.ps1", arguments)    
   end
   
-  # Execute -- calls a class method
+  # Execute -- calls a class or object method
   def execute(type_name, object_id, method, arguments)
-    run_command(".\\mesh-execute.ps1")        
+    command_arguments = "#{type_name} #{method}"    
+    run_command(".\\mesh-execute.ps1", command_arguments)        
   end
   
   # Get -- gets existing object
