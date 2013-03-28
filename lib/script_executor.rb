@@ -24,21 +24,51 @@ class ScriptExecutor
     @current_dir = File.dirname(__FILE__)    
   end
 
-  def run_command(script_name, command_line_arguments = nil)
-    command_line = "cat " + get_script_path(script_name) + " " + (command_line_arguments.nil? ? '' : command_line_arguments)
+  def run_script(script_name, command_line_arguments = nil, library_command = nil)
+
+    script_spec = ".\\#{script_name}"
+    
+    run_powershell_command(nil, script_spec, command_line_arguments, library_command)
+    
+  end
+
+  def run_command(session_id, command_name, command_line_arguments = nil, library_command = nil)
+
+    if ( session_id.nil? )
+      raise "Invalid session id"
+    end
+    
+    run_powershell_command(command_name, command_line_arguments, library_command)
+  end
+
+  private
+  
+  def run_powershell_command(session_id, command_spec, command_line_arguments = nil, library_command = nil)
+
+    load_commands = "cd '#{@current_dir}'"
+    
+    if ! library_command.nil?
+      load_commands = load_commands + ";#{library_command}"
+    end
+    
+    arguments = (command_line_arguments.nil? ? '' : command_line_arguments)
+
+    if ( ! session_id.nil? )
+      arguments = session_id + " " + arguments
+    end
+    
+    command_line = "powershell -noninteractive -noprofile -command \"#{load_commands};#{command_spec} #{arguments}\""
+
     command = Mixlib::ShellOut.new(command_line)
     result = command.run_command
     return_value = result.stdout
     exitstatus = result.exitstatus
 
     if exitstatus != 0
-      raise "Command failed with error status #{exitstatus}"
+      raise "Command #{command_line} failed with error status #{exitstatus}"
     end
-    
-  end
 
-  def get_script_path(script_name)
-    File::join(@current_dir,script_name)
+    return_value
   end
   
 end

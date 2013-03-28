@@ -16,43 +16,71 @@
 # limitations under the License.
 #
 
-require 'script_executor'
+require 'mesh_session'
 
 class Mesh
 
-  def initialize
-    @script_executor = ScriptExecutor.new
+  def self.with_clr
+    new_mesh = Mesh.new
+    yield new_mesh
+  ensure
+    new_mesh.send(:release)
   end
 
   # Create -- creates a new object instance of a type 
-  def Create(type_name, arguments = nil)
+  def create(type_name, arguments = nil)
     run_command('mesh-create.ps1')
   end
     
   # List -- lists methods on a type or object
-  def List(type_name, object_id = nil)
+  def list(type_name, object_id = nil)
     run_command('mesh-list.ps1')    
   end
   
   # Execute -- calls a class method
-  def Execute(type_name, object_id, method, arguments)
+  def execute(type_name, object_id, method, arguments)
     run_command('mesh-execute.ps1')        
   end
   
   # Get -- gets existing object
-  def Get(object_id)
+  def get(object_id)
     run_command('mesh-get.ps1')            
   end
   
   # Delete?
-  def Delete(object_id)
+  def delete(object_id)
     run_command('mesh-delete.ps1')
+  end
+
+  protected
+
+  def initialize
+    process_id = Process.pid
+    session_name = "Ruby-Mesh-#{process_id}"
+    @script_executor = ScriptExecutor.new
+    @session = MeshSession.new(session_name)
+    @released = false
+
+  end
+
+  def release
+    @session.close
+    @session = nil
+    @released = true
   end
 
   private
 
   def run_command(script_name)
-    @script_executor.run_command(script_name)
+    if @released
+      raise "Instance already released"
+    end
+
+    if @session.session_id.nil?
+      @session.open
+    end
+    
+    @script_executor.run_command(@session.session_id,script_name, ".\\profile\\mesh-profile.ps1")
   end
   
 end

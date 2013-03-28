@@ -1,6 +1,6 @@
-# Creates a new object
+# Lists methods of a class or instance
 
-function mesh-delete
+function mesh-list
 {
     [CmdletBinding()]
     param

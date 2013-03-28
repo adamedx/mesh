@@ -1,6 +1,6 @@
 # Creates a new object
 
-function mesh-delete
+function mesh-create
 {
     [CmdletBinding()]
     param

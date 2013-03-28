@@ -19,7 +19,7 @@
 
 require 'spec_helper'
 require 'tmpdir'
-require_relative '../../lib/mesh'
+require 'FileUtils'
 require_relative '../../lib/mesh_session'
 
 # These test cases exercise the Knife::Windows knife plugin's ability
@@ -45,6 +45,12 @@ describe 'Mesh core .NET interop functionality' do
     # Location to which the download script will be modified to write
     # the downloaded msi
     # @local_file_download_destination = "#{@temp_directory}/chef-client-latest.msi"
+    @original_dir = FileUtils.pwd
+
+    if windows?
+      FileUtils.cd ENV['SystemRoot']
+    end
+    
   end
 
   after(:all) do
@@ -52,6 +58,7 @@ describe 'Mesh core .NET interop functionality' do
     #if Dir.exists?(@temp_directory)
     #  FileUtils::remove_dir(@temp_directory)
     #end
+    FileUtils.cd @original_dir
   end
 
   describe "running on a Windows OS that supports powershell by default", :windows_default_powershell_only do
@@ -59,47 +66,20 @@ describe 'Mesh core .NET interop functionality' do
       clean_test_case      
     end
 
-    describe "a mesh class instance" do
+    describe "a mesh_session class instance" do
 
-      it "constructs a Mesh class" do
-        Mesh.with_clr do | mesh |
-        end
+      it "constructs a MeshSession class" do
+        session = MeshSession.new "test_session"
       end
 
-      it "Creates an instance" do
-        Mesh.with_clr do | mesh |
-          mesh.create("fun")          
-        end
-      end
+      it "Opens and closes session" do
+        session = MeshSession.new "test-session Open and Close"
 
-      it "Lists methods on a type" do
-        Mesh.with_clr do | mesh |
-          mesh.list("fun")                
-        end
-      end
+        session.open
 
-      it "Lists methods on an instance" do
-        Mesh.with_clr do | mesh |
-          mesh.list("fun")
-        end
-      end
+        session.session_id.length.should > 0
 
-      it "Executes a method on a class" do
-        Mesh.with_clr do | mesh |
-          mesh.execute("fun", "objectid", "method", nil)
-        end
-      end
-
-      it "Gets an existing object" do
-        Mesh.with_clr do | mesh |
-          mesh.get("fun")
-        end
-      end
-
-      it "Deletes an existing object" do
-        Mesh.with_clr do | mesh |
-          mesh.delete("fun")
-        end
+        session.close
       end
     end
   end

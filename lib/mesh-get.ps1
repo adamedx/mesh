@@ -1,6 +1,6 @@
-# Creates a new object
+# Gets an existing object
 
-function mesh-delete
+function mesh-get
 {
     [CmdletBinding()]
     param

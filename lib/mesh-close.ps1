@@ -1,19 +1,18 @@
-# Starts a Mesh session
+# Closes a Mesh session
 
-function mesh-start
+function mesh-close
 {
     [CmdletBinding()]
     param
     (
-         [String] $profilePath
-#         [String] $sessionName = "",
+         [String] $sessionId
 #        [String] $username = $null,
 #        [String] $location = "~"
     )
     PROCESS
     {
-        $session = New-PSSession -ComputerName .
-        Invoke-Command -Session $session -ScriptBlock {param($profilePathParameter) cd $remotelocation} -ArgumentList $location
-        $session
+        remove-pssession -instanceid $sessionid
     }
 } 
+
+mesh-close $args[0]

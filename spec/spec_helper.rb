@@ -17,10 +17,8 @@
 #
 
 def windows?
-  !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
+  !!(RUBY_PLATFORM =~ /mswin|mingw|i386-cygwin|windows/)
 end
-
-require_relative '../lib/mesh'
 
 if windows?
   require 'ruby-wmi'
