@@ -9,6 +9,6 @@ $scripts = get-childitem "$profilepath" -filter "mesh*.ps1"
 foreach ( $script in $scripts )
 {
     $scriptpath = $script.fullname
-    . "$scriptpath"
+    #. $scriptpath
 }
 

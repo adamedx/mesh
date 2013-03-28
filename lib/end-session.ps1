@@ -11,7 +11,8 @@ function mesh-close
     )
     PROCESS
     {
-        remove-pssession -instanceid $sessionid
+        $session = connect-pssession -computername . -instanceid $sessionid
+        remove-pssession -session $session
     }
 } 
 

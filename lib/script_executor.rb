@@ -64,9 +64,7 @@ class ScriptExecutor
     
     command_line = "powershell -noninteractive -noprofile -command \"#{load_commands};#{command_spec} #{arguments}\""
 
-    if (!session_id.nil? && session_id.length > 30)
-      raise "Bad Session id: #{session_id}"
-    end
+    `echo #{command_line} > %userprofile%\\commandline.txt`
     
     command = Mixlib::ShellOut.new(command_line)
     result = command.run_command
@@ -74,8 +72,9 @@ class ScriptExecutor
     @last_error_output = result.stderr
     exitstatus = result.exitstatus
 
-    if exitstatus != 0 || return_value.length > 30 
-      raise "Command #{command_line} failed with error status #{exitstatus}: \n#{@last_error_output}"
+    # || @last_error_output.length > 0
+    if exitstatus != 0 
+      raise "Command #{command_line} failed with error status #{exitstatus}\n#{@last_error_output}"
     end
 
     return_value

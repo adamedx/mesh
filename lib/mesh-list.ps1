@@ -5,15 +5,31 @@ function mesh-list
     [CmdletBinding()]
     param
     (
-         [String] $workingdirectory,
          [String] $sessionId,
+         [String] $workingdirectory,
          [String] $typename,
-         [String] $objectid
+         [String] $objectid = $null
     )
     PROCESS
     {
-        $session = get-pssession -instanceid $sessionId
+        $session = get-pssession -computername . -instanceid $sessionid
+        
+        if ($session.State -eq 'disconnected')
+        {
+            $session = connect-pssession -computername . -instanceid $sessionId
+        }
         $typearg = "[{0}]" -f $typename         
-        Invoke-Command -Session $session -ScriptBlock {param($workingdirectoryparameter,$typeparam) cd $workingdirectoryparameter; $typeparam | get-member} -ArgumentList $workingdirectory,$typearg
+        $staticarg = ''
+        if ( $objectid -eq $null ) { $staticarg = '-static' }
+        Invoke-Command -Session $session -ScriptBlock {param($workingdirectoryparameter,$typeparam) cd $workingdirectoryparameter; [System.Type]::GetType($typeparam) | get-member -static} -ArgumentList $workingdirectory,$typename
+        if ($session -ne $null )
+        {
+            disconnect-pssession -session $session | out-null
+        }
     }
 } 
+
+
+$objectarg=$null
+if ( $args.length -ge 3 ) { $objectarg = $args[2] }
+mesh-list $args[0] . $args[1] $objectarg

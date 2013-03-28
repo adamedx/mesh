@@ -29,7 +29,7 @@ class Mesh
 
   # Create -- creates a new object instance of a type 
   def create(type_name, arguments = nil)
-    run_command('mesh-create')
+    run_command(".\\mesh-create.ps1")
   end
     
   # List -- lists methods on a type or object
@@ -37,22 +37,22 @@ class Mesh
 
     object_argument = object_id.nil? ? '' : object_id
     arguments = "#{type_name} #{object_argument}"
-    run_command('mesh-list', arguments)    
+    run_command(".\\mesh-list.ps1", arguments)    
   end
   
   # Execute -- calls a class method
   def execute(type_name, object_id, method, arguments)
-    run_command('mesh-execute')        
+    run_command(".\\mesh-execute.ps1")        
   end
   
   # Get -- gets existing object
   def get(object_id)
-    run_command('mesh-get')            
+    run_command(".\\mesh-get.ps1")            
   end
   
   # Delete?
   def delete(object_id)
-    run_command('mesh-delete')
+    run_command(".\\mesh-delete.ps1")
   end
 
   protected
@@ -63,7 +63,7 @@ class Mesh
     @script_executor = ScriptExecutor.new
     @session = MeshSession.new(session_name)
     @released = false
-
+    @current_dir = File.dirname(__FILE__)        
   end
 
   def release
@@ -83,7 +83,7 @@ class Mesh
       @session.open
     end
     
-    @script_executor.run_command(@session.session_id,script_name, nil)
+    @script_executor.run_command(@session.session_id,script_name, arguments, ".\\profile\\mesh-profile.ps1 '#{@current_dir}'")
   end
   
 end

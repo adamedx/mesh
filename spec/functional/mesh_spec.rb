@@ -72,9 +72,11 @@ describe 'Mesh core .NET interop functionality' do
         end
       end
 
-      it "Lists methods on a type", :focus do
+      it "Lists methods on a type" do
         Mesh.with_clr do | mesh |
-          mesh.list('System.Security.Principal.WindowsIdentity')                
+          result  = mesh.list('System.Security.Principal.WindowsIdentity')
+          result.length.should > 20
+          result.include?('Impersonate').should == true
         end
       end
 

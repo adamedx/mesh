@@ -13,8 +13,9 @@ function mesh-start
     PROCESS
     {
 #    & net use z: \"\\\\vmware-host\\shared folders\"'
-        $session = New-PSSession -Name "$sessionName" -ComputerName .
+        $session = New-PSSession -Name "$sessionName" -ComputerName . 
         Invoke-Command -Session $session -ScriptBlock {param($workingdirectoryparameter) cd $workingdirectoryparameter} -ArgumentList $workingdirectory
+        disconnect-pssession -instanceid $session.instanceid | out-null
         $session.instanceid.tostring()
     }
 } 
