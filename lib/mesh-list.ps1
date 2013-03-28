@@ -6,15 +6,14 @@ function mesh-list
     param
     (
          [String] $workingdirectory,
-         [String] $sessionName
-#        [String] $username = $null,
-#        [String] $location = "~"
+         [String] $sessionId,
+         [String] $typename,
+         [String] $objectid
     )
     PROCESS
     {
-#    & net use z: \"\\\\vmware-host\\shared folders\"'
-#        $session = New-PSSession -Name "$sessionName" -ComputerName .
-#        Invoke-Command -Session $session -ScriptBlock {param($workingdirectoryparameter) cd $workingdirectoryparameter} -ArgumentList $workingdirectory
-#        $session.instanceid.tostring()
+        $session = get-pssession -instanceid $sessionId
+        $typearg = "[{0}]" -f $typename         
+        Invoke-Command -Session $session -ScriptBlock {param($workingdirectoryparameter,$typeparam) cd $workingdirectoryparameter; $typeparam | get-member} -ArgumentList $workingdirectory,$typearg
     }
 } 

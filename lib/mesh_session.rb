@@ -16,20 +16,19 @@ class MeshSession
   def open
 
     if @session_id.nil?
-      script_name = 'mesh-start.ps1'
       arguments = "#{@current_dir} #{@name}"
     else
       throw "Session already open"
     end
 
-    @session_id = @script_executor.run_script(script_name, arguments, @current_dir)
+    @session_id = @script_executor.run_script('start-session.ps1', arguments, ".\\profile\\mesh-profile.ps1 '#{@current_dir}'")
 
     return
   end
 
   def close
 
-    @script_executor.run_script('mesh-close.ps1', "#{@session_id}", @current_dir)
+    @script_executor.run_script('end-session.ps1', "'#{@session_id}'")
 
     @session_id = nil
     

@@ -21,8 +21,11 @@ require 'mixlib/shellout'
 class ScriptExecutor
 
   def initialize
-    @current_dir = File.dirname(__FILE__)    
+    @current_dir = File.dirname(__FILE__)
+    @last_error_output = nil
   end
+
+  attr_accessor :last_error_output
 
   def run_script(script_name, command_line_arguments = nil, library_command = nil)
 
@@ -38,13 +41,15 @@ class ScriptExecutor
       raise "Invalid session id"
     end
     
-    run_powershell_command(command_name, command_line_arguments, library_command)
+    run_powershell_command(session_id, command_name, command_line_arguments, library_command)
   end
 
   private
   
   def run_powershell_command(session_id, command_spec, command_line_arguments = nil, library_command = nil)
 
+    @last_error_output = nil
+    
     load_commands = "cd '#{@current_dir}'"
     
     if ! library_command.nil?
@@ -54,18 +59,23 @@ class ScriptExecutor
     arguments = (command_line_arguments.nil? ? '' : command_line_arguments)
 
     if ( ! session_id.nil? )
-      arguments = session_id + " " + arguments
+      arguments = "'" + session_id + "' " + arguments
     end
     
     command_line = "powershell -noninteractive -noprofile -command \"#{load_commands};#{command_spec} #{arguments}\""
 
+    if (!session_id.nil? && session_id.length > 30)
+      raise "Bad Session id: #{session_id}"
+    end
+    
     command = Mixlib::ShellOut.new(command_line)
     result = command.run_command
     return_value = result.stdout
+    @last_error_output = result.stderr
     exitstatus = result.exitstatus
 
-    if exitstatus != 0
-      raise "Command #{command_line} failed with error status #{exitstatus}"
+    if exitstatus != 0 || return_value.length > 30 
+      raise "Command #{command_line} failed with error status #{exitstatus}: \n#{@last_error_output}"
     end
 
     return_value

@@ -72,9 +72,9 @@ describe 'Mesh core .NET interop functionality' do
         end
       end
 
-      it "Lists methods on a type" do
+      it "Lists methods on a type", :focus do
         Mesh.with_clr do | mesh |
-          mesh.list("fun")                
+          mesh.list('System.Security.Principal.WindowsIdentity')                
         end
       end
 

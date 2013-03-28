@@ -29,27 +29,30 @@ class Mesh
 
   # Create -- creates a new object instance of a type 
   def create(type_name, arguments = nil)
-    run_command('mesh-create.ps1')
+    run_command('mesh-create')
   end
     
   # List -- lists methods on a type or object
   def list(type_name, object_id = nil)
-    run_command('mesh-list.ps1')    
+
+    object_argument = object_id.nil? ? '' : object_id
+    arguments = "#{type_name} #{object_argument}"
+    run_command('mesh-list', arguments)    
   end
   
   # Execute -- calls a class method
   def execute(type_name, object_id, method, arguments)
-    run_command('mesh-execute.ps1')        
+    run_command('mesh-execute')        
   end
   
   # Get -- gets existing object
   def get(object_id)
-    run_command('mesh-get.ps1')            
+    run_command('mesh-get')            
   end
   
   # Delete?
   def delete(object_id)
-    run_command('mesh-delete.ps1')
+    run_command('mesh-delete')
   end
 
   protected
@@ -71,7 +74,7 @@ class Mesh
 
   private
 
-  def run_command(script_name)
+  def run_command(script_name, arguments = nil)
     if @released
       raise "Instance already released"
     end
@@ -80,7 +83,7 @@ class Mesh
       @session.open
     end
     
-    @script_executor.run_command(@session.session_id,script_name, ".\\profile\\mesh-profile.ps1")
+    @script_executor.run_command(@session.session_id,script_name, nil)
   end
   
 end
