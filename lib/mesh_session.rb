@@ -1,6 +1,6 @@
 # Manages the Mesh session
 
-require 'script_executor.rb'
+require 'script_executor'
 
 class MeshSession
   

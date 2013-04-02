@@ -13,11 +13,14 @@ function mesh-execute
     )
     PROCESS
     {
-        $session = get-pssession -computername . -instanceid $sessionid
+        $classtype = [System.Type]::GetType($typename);
+        return $classtype::$methodname.Invoke();
+
+        $session = get-pssession -instanceid $sessionid
         
         if ($session.State -eq 'disconnected')
         {
-            $session = connect-pssession -computername . -instanceid $sessionId
+            $session = connect-pssession -instanceid $sessionId
         }
         $staticarg = ''
         if ( $objectid -eq $null ) { $staticarg = '-static' }

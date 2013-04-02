@@ -36,7 +36,7 @@ class ScriptExecutor
   end
 
   def run_command(session_id, command_name, command_line_arguments = nil, library_command = nil)
-
+    
     if ( session_id.nil? )
       raise "Invalid session id"
     end
@@ -47,7 +47,7 @@ class ScriptExecutor
   private
   
   def run_powershell_command(session_id, command_spec, command_line_arguments = nil, library_command = nil)
-
+    
     @last_error_output = nil
     
     load_commands = "cd '#{@current_dir}'"

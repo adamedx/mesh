@@ -15,8 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+$:.unshift File.dirname(__FILE__)
 require 'mesh_session'
+
 
 class Mesh
 
@@ -56,8 +57,6 @@ class Mesh
     run_command(".\\mesh-delete.ps1")
   end
 
-  protected
-
   def initialize
     process_id = Process.pid
     session_name = "Ruby-Mesh-#{process_id}"
@@ -66,6 +65,8 @@ class Mesh
     @released = false
     @current_dir = File.dirname(__FILE__)        
   end
+
+  protected
 
   def release
     @session.close
